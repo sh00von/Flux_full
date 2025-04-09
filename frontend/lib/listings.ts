@@ -52,17 +52,20 @@ export async function getListings(filters?: {
   try {
     let url = API_URL
 
-    if (filters) {
-      const queryParams = new URLSearchParams()
+    // Create query parameters
+    const queryParams = new URLSearchParams()
 
-      if (filters.category) queryParams.append("category", filters.category)
-      if (filters.condition) queryParams.append("condition", filters.condition)
-      if (filters.location) queryParams.append("location", filters.location)
-      if (filters.showAll) queryParams.append("showAll", "true")
+    // Only show verified/approved listings by default
+    if (!filters?.showAll) {
+      queryParams.append("isVerified", "true")
+    }
 
-      if (queryParams.toString()) {
-        url += `?${queryParams.toString()}`
-      }
+    if (filters?.category) queryParams.append("category", filters.category)
+    if (filters?.condition) queryParams.append("condition", filters.condition)
+    if (filters?.location) queryParams.append("location", filters.location)
+
+    if (queryParams.toString()) {
+      url += `?${queryParams.toString()}`
     }
 
     const response = await fetch(url, {
@@ -81,6 +84,30 @@ export async function getListings(filters?: {
     return data
   } catch (error) {
     console.error("Fetch listings error:", error)
+    throw error
+  }
+}
+
+export async function getFeaturedListings(limit = 6) {
+  try {
+    const url = `${API_URL}?isVerified=true&limit=${limit}`
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to fetch featured listings")
+    }
+
+    return data
+  } catch (error) {
+    console.error("Fetch featured listings error:", error)
     throw error
   }
 }

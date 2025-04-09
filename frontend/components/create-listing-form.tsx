@@ -48,7 +48,8 @@ const categories = [
 
 const conditions = ["New", "Like New", "Good", "Fair", "Poor"]
 
-const tradePreferences = ["Sell", "Trade", "Sell or Trade"]
+// Updated tradePreferences to match the Listing model exactly.
+const tradePreferences = ["Swap", "Sell", "Gift", "Swap or Sell"]
 
 export default function CreateListingForm() {
   const [isLoading, setIsLoading] = useState(false)
@@ -261,7 +262,7 @@ export default function CreateListingForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="price">Price ($)</Label>
+          <Label htmlFor="price">Price (৳)</Label>
           <Input
             id="price"
             type="number"

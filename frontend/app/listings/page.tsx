@@ -29,11 +29,12 @@ export default function ListingsPage() {
 
       try {
         // Create filter object based on URL params
-        const filters: Record<string, string | boolean> = { showAll: true }
+        const filters: Record<string, string | boolean> = {}
         if (category) filters.category = category
         if (condition) filters.condition = condition
         if (location) filters.location = location
 
+        // Note: We're not passing showAll=true, so only verified listings will be returned
         const data = await getListings(filters)
         setListings(data)
       } catch (error) {
@@ -71,7 +72,7 @@ export default function ListingsPage() {
         <div className="flex flex-col md:flex-row gap-6">
           {/* Mobile filter toggle */}
           <div className="md:hidden flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">Listings</h1>
+            <h1 className="text-2xl font-bold">Verified Listings</h1>
             <Button
               variant="outline"
               size="sm"
@@ -104,7 +105,7 @@ export default function ListingsPage() {
           {/* Main content */}
           <div className="flex-1">
             <div className="hidden md:flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">Listings</h1>
+              <h1 className="text-2xl font-bold">Verified Listings</h1>
 
               {hasActiveFilters && (
                 <Button variant="outline" size="sm" onClick={clearFilters} className="flex items-center">

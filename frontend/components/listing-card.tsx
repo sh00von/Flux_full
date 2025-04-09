@@ -38,10 +38,10 @@ export default function ListingCard({ listing }: ListingCardProps) {
     day: "numeric",
   })
 
-  // Format price with commas for thousands
+  // Format price with commas for thousands using Bangladeshi Taka (BDT)
   const formattedPrice = new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: "BDT",
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(listing.price)

@@ -9,8 +9,8 @@ import Navbar from "@/components/navbar"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Trading Platform",
-  description: "A secure trading platform with user authentication",
+  title: "FluxTrade - Buy, Sell, Trade with Confidence",
+  description: "A secure trading platform with verified listings and trusted users",
 }
 
 export default function RootLayout({

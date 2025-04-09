@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { isAuthenticated, logout } from "@/lib/auth"
 import { isAdminAuthenticated } from "@/lib/admin"
-import { ShieldAlert, ListPlus, Search } from "lucide-react"
+import { ShieldAlert, ListPlus, Search, LogIn } from "lucide-react"
 
 export default function Navbar() {
   const [authenticated, setAuthenticated] = useState(false)
@@ -35,7 +35,7 @@ export default function Navbar() {
       <div className="container flex h-14 items-center">
         <div className="mr-4 flex">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-xl">Trading Platform</span>
+            <span className="font-bold text-xl text-blue-600">FluxTrade</span>
           </Link>
         </div>
 
@@ -90,10 +90,16 @@ export default function Navbar() {
             </>
           )}
 
-          {isAdmin && (
+          {isAdmin ? (
             <Button variant="outline" size="sm" className="ml-2" asChild>
               <Link href="/admin/dashboard">
                 <ShieldAlert className="h-4 w-4 mr-2" /> Admin
+              </Link>
+            </Button>
+          ) : (
+            <Button variant="ghost" size="sm" className="ml-2" asChild>
+              <Link href="/admin/login">
+                <LogIn className="h-4 w-4 mr-2" /> Admin Login
               </Link>
             </Button>
           )}
