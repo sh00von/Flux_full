@@ -127,10 +127,26 @@ const getAllListings = async (req, res) => {
   }
 };
 
+// NEW: Get a single listing by its ID (full details)
+const getListingById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const listing = await Listing.findById(id)
+      .populate('owner', 'username email');
+    if (!listing) {
+      return res.status(404).json({ message: 'Listing not found' });
+    }
+    res.status(200).json(listing);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createListing,
   getPendingListings,
   verifyListing,
   getListingStatus,
-  getAllListings
+  getAllListings,
+  getListingById   // Export the new function
 };

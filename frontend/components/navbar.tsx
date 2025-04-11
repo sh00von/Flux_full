@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { isAuthenticated, logout } from "@/lib/auth"
 import { isAdminAuthenticated } from "@/lib/admin"
-import { ShieldAlert, ListPlus, Search, LogIn } from "lucide-react"
+import { ShieldAlert, ListPlus, Search, LogIn, MessageSquare } from "lucide-react"
 
 export default function Navbar() {
   const [authenticated, setAuthenticated] = useState(false)
@@ -51,10 +51,18 @@ export default function Navbar() {
           <Link
             href="/listings"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              pathname === "/listings" ? "text-primary" : "text-muted-foreground"
+              pathname === "/listings" || pathname?.startsWith("/listings/") ? "text-primary" : "text-muted-foreground"
             }`}
           >
             Browse Listings
+          </Link>
+          <Link
+            href="/forum"
+            className={`text-sm font-medium transition-colors hover:text-primary ${
+              pathname === "/forum" || pathname?.startsWith("/forum/") ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            Forum
           </Link>
         </nav>
 
@@ -62,6 +70,12 @@ export default function Navbar() {
           <Button variant="outline" size="sm" className="hidden md:flex" asChild>
             <Link href="/listings">
               <Search className="h-4 w-4 mr-2" /> Browse Listings
+            </Link>
+          </Button>
+
+          <Button variant="ghost" size="sm" className="hidden md:flex" asChild>
+            <Link href="/forum">
+              <MessageSquare className="h-4 w-4 mr-2" /> Forum
             </Link>
           </Button>
 

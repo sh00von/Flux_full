@@ -1,14 +1,9 @@
 "use client"
-
-import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Loader2, ArrowRight, Search, Tag, ShieldCheck, RefreshCw, CheckCircle } from "lucide-react"
-import ListingCard from "@/components/listing-card"
 
 export default function HomePage() {
-  const [loading, setLoading] = useState(true)
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -16,7 +11,7 @@ export default function HomePage() {
       <section className=" py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-            Buy, Sell, Trade with <span className="text-yellow-300">FluxTrade</span>
+            Buy, Sell, Trade with <span className="text-blue-800">FluxTrade</span>
           </h1>
           <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto">
             The secure marketplace for buying, selling, and trading items with verified listings and trusted users.
@@ -33,7 +28,7 @@ export default function HomePage() {
 
 
       {/* CTA Section */}
-      <section className="py-16 bg-blue-600 text-white">
+      <section className="py-16 bg-gray-400 text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to Start Trading?</h2>
           <p className="text-lg mb-8 max-w-2xl mx-auto">

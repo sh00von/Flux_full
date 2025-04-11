@@ -6,7 +6,8 @@ const {
   getPendingListings, 
   verifyListing, 
   getListingStatus, 
-  getAllListings 
+  getAllListings,
+  getListingById   // Newly added
 } = require('../controllers/listingController');
 const verifyToken = require('../middleware/auth');
 
@@ -19,8 +20,11 @@ router.get('/pending', verifyToken, getPendingListings);
 // PUT /api/listings/:id/verify (manual moderation, admin only)
 router.put('/:id/verify', verifyToken, verifyListing);
 
-// GET /api/listings/:id/status (open endpoint)
+// GET /api/listings/:id/status (for users, shows limited info)
 router.get('/:id/status', getListingStatus);
+
+// NEW: GET /api/listings/:id (for full details of a single listing)
+router.get('/:id', getListingById);
 
 // GET /api/listings (with filtering)
 router.get('/', getAllListings);

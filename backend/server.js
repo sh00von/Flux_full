@@ -8,6 +8,8 @@ const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const listingRoutes = require('./routes/listingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const forumRoutes = require('./routes/forumRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 const app = express();
 
@@ -22,10 +24,12 @@ app.use(express.json());
 app.use('/api/users', userRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/forum', forumRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
-  res.send('Trading Platform API is running');
+  res.send('FluxTrade Platform API is running');
 });
 
 // Define port

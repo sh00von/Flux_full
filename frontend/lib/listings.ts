@@ -2,6 +2,25 @@
 
 const API_URL = "http://localhost:5000/api/listings"
 
+export interface Listing {
+  _id: string
+  title: string
+  description: string
+  images: string[]
+  category: string
+  condition: string
+  location: string
+  price: number
+  tradePreference: string
+  owner: {
+    username: string
+    email: string
+  }
+  createdAt: string
+  isVerified: boolean
+  verificationStatus: string
+}
+
 interface ListingData {
   title: string
   description: string
@@ -48,7 +67,7 @@ export async function getListings(filters?: {
   condition?: string
   location?: string
   showAll?: boolean
-}) {
+}): Promise<Listing[]> {
   try {
     let url = API_URL
 
@@ -88,7 +107,30 @@ export async function getListings(filters?: {
   }
 }
 
-export async function getFeaturedListings(limit = 6) {
+// Update the getListingById function to properly fetch a listing by ID
+export async function getListingById(id: string): Promise<Listing> {
+  try {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to fetch listing")
+    }
+
+    return data
+  } catch (error) {
+    console.error("Fetch listing error:", error)
+    throw error
+  }
+}
+
+export async function getFeaturedListings(limit = 6): Promise<Listing[]> {
   try {
     const url = `${API_URL}?isVerified=true&limit=${limit}`
 

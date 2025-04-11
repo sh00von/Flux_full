@@ -2,9 +2,9 @@ import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
 import AdminLoginForm from "@/components/admin-login-form"
 
-export default function AdminLoginPage() {
+export default async function AdminLoginPage() {
   // Check if admin is already logged in
-  const token = cookies().get("admin-token")?.value
+  const token = (await cookies()).get("admin-token")?.value
 
   if (token) {
     redirect("/admin/dashboard")

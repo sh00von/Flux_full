@@ -2,9 +2,9 @@ import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
 import RegisterForm from "@/components/register-form"
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
   // Check if user is already logged in
-  const token = cookies().get("auth-token")?.value
+  const token = (await cookies()).get("auth-token")?.value
 
   if (token) {
     redirect("/profile")
