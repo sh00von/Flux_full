@@ -79,9 +79,13 @@ export default function CreateListingForm() {
   })
 
   const addImage = () => {
+    console.log("Add image clicked. Image URL:", imageUrl)
     if (!imageUrl) return
 
-    if (!imageUrl.match(/^https?:\/\/.+\.(jpeg|jpg|png|gif|webp)$/i)) {
+    // You may need to adjust this regex if your URLs include query strings or other valid characters.
+    const imageRegex = /^https?:\/\/.+\.(jpeg|jpg|png|gif|webp)$/i
+    if (!imageUrl.match(imageRegex)) {
+      console.error("Invalid image URL:", imageUrl)
       toast({
         title: "Invalid Image URL",
         description: "Please enter a valid image URL (http/https with image extension)",
@@ -90,14 +94,21 @@ export default function CreateListingForm() {
       return
     }
 
-    setImages([...images, imageUrl])
+    // Update the images state and clear the input
+    setImages((prevImages) => {
+      const newImages = [...prevImages, imageUrl]
+      console.log("Updated images array:", newImages)
+      return newImages
+    })
     setImageUrl("")
   }
 
   const removeImage = (index: number) => {
-    const newImages = [...images]
-    newImages.splice(index, 1)
-    setImages(newImages)
+    setImages((prevImages) => {
+      const newImages = [...prevImages]
+      newImages.splice(index, 1)
+      return newImages
+    })
   }
 
   const onSubmit = async (data: ListingFormValues) => {
@@ -119,14 +130,13 @@ export default function CreateListingForm() {
         images,
       }
 
-      const response = await createListing(listingData)
+      await createListing(listingData)
 
       toast({
         title: "Listing Created",
         description: "Your listing has been submitted for review and will be visible once approved.",
       })
 
-      // Redirect to a success page or listings page
       router.push("/listings/success")
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to create listing. Please try again."
@@ -182,7 +192,12 @@ export default function CreateListingForm() {
             onChange={(e) => setImageUrl(e.target.value)}
             disabled={isLoading}
           />
-          <Button type="button" onClick={addImage} disabled={isLoading || !imageUrl}>
+          <Button
+            type="button"
+            onClick={addImage}
+            disabled={isLoading || !imageUrl}
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+          >
             <Plus className="h-4 w-4" />
           </Button>
         </div>
@@ -221,7 +236,7 @@ export default function CreateListingForm() {
             <SelectTrigger>
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white hover:bg-white">
               {categories.map((category) => (
                 <SelectItem key={category} value={category}>
                   {category}
@@ -242,7 +257,7 @@ export default function CreateListingForm() {
             <SelectTrigger>
               <SelectValue placeholder="Select condition" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white hover:bg-white">
               {conditions.map((condition) => (
                 <SelectItem key={condition} value={condition}>
                   {condition}
@@ -286,7 +301,7 @@ export default function CreateListingForm() {
           <SelectTrigger>
             <SelectValue placeholder="Select preference" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white hover:bg-white">
             {tradePreferences.map((preference) => (
               <SelectItem key={preference} value={preference}>
                 {preference}
