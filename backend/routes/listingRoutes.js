@@ -30,3 +30,5 @@ router.get('/:id', getListingById);
 router.get('/', getAllListings);
 
 module.exports = router;
+
+// https://localhost:3000/api/listings

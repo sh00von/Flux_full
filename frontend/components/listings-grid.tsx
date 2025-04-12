@@ -40,7 +40,7 @@ export default function ListingsGrid({ listings }: ListingsGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {listings.map((listing) => (
         <ListingCard key={listing._id} listing={listing} />
       ))}

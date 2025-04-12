@@ -312,7 +312,7 @@ export default function CreateListingForm() {
         {errors.tradePreference && <p className="text-sm text-red-500">{errors.tradePreference.message}</p>}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button type="submit" className="w-full text-white bg-blue-700 hover:bg-blue-950 " disabled={isLoading}>
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating Listing...

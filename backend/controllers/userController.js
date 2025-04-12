@@ -56,7 +56,7 @@ const signInUser = async (req, res) => {
     };
     
     // Sign and create the token (expires in 1 hour)
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
     
     res.status(200).json({ 
       token, 

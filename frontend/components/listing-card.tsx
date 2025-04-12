@@ -72,7 +72,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
       </div>
 
       <CardContent className="p-4 flex-grow">
-        <h3 className="font-semibold text-lg mb-1 line-clamp-1">{listing.title}</h3>
+        <h3 className="font-semibold text-blue-800 text-lg mb-1 line-clamp-1">{listing.title}</h3>
         <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{listing.description}</p>
 
         <div className="flex flex-wrap gap-2 mb-3">
