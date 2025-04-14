@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
 import { register as registerUser } from "@/lib/auth"
-import { Loader2, AlertCircle } from "lucide-react"
+import { Loader2, AlertCircle, CheckCircle } from 'lucide-react'
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 const registerSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters" }),
@@ -87,69 +88,107 @@ export default function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+    <Card className="border-blue-200 overflow-hidden">
+      <div className="h-2 bg-gradient-to-r from-blue-400 to-blue-600"></div>
+      <CardHeader className="bg-blue-50">
+        <CardTitle className="text-2xl text-blue-700">Create Trading Account</CardTitle>
+        <CardDescription className="text-blue-600">
+          Join our community of traders and start your journey today
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="pt-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-      {success && (
-        <Alert variant="default" className="bg-green-50 text-green-800 border-green-200">
-          <AlertDescription>{success}</AlertDescription>
-        </Alert>
-      )}
+          {success && (
+            <Alert className="bg-green-50 text-green-800 border-green-200">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <AlertDescription>{success}</AlertDescription>
+            </Alert>
+          )}
 
-      <div className="space-y-2">
-        <Label htmlFor="username">Username</Label>
-        <Input id="username" placeholder="johndoe" {...register("username")} disabled={isLoading} />
-        {errors.username && <p className="text-sm text-red-500">{errors.username.message}</p>}
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="username" className="text-blue-700 font-medium">Username</Label>
+            <Input 
+              id="username" 
+              placeholder="johndoe" 
+              {...register("username")} 
+              disabled={isLoading} 
+              className="border-blue-200 bg-blue-50 focus:border-blue-400 focus:ring-blue-300"
+            />
+            {errors.username && <p className="text-sm text-red-500">{errors.username.message}</p>}
+          </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" placeholder="name@example.com" {...register("email")} disabled={isLoading} />
-        {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-blue-700 font-medium">Email</Label>
+            <Input 
+              id="email" 
+              type="email" 
+              placeholder="name@example.com" 
+              {...register("email")} 
+              disabled={isLoading} 
+              className="border-blue-200 bg-blue-50 focus:border-blue-400 focus:ring-blue-300"
+            />
+            {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+          </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input id="password" type="password" placeholder="••••••••" {...register("password")} disabled={isLoading} />
-        {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-blue-700 font-medium">Password</Label>
+            <Input 
+              id="password" 
+              type="password" 
+              placeholder="••••••••" 
+              {...register("password")} 
+              disabled={isLoading} 
+              className="border-blue-200 bg-blue-50 focus:border-blue-400 focus:ring-blue-300"
+            />
+            {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+          </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="profilePicture">Profile Picture URL (optional)</Label>
-        <Input
-          id="profilePicture"
-          placeholder="https://example.com/profile.jpg"
-          {...register("profilePicture")}
-          disabled={isLoading}
-        />
-        {errors.profilePicture && <p className="text-sm text-red-500">{errors.profilePicture.message}</p>}
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="profilePicture" className="text-blue-700 font-medium">Profile Picture URL (optional)</Label>
+            <Input
+              id="profilePicture"
+              placeholder="https://example.com/profile.jpg"
+              {...register("profilePicture")}
+              disabled={isLoading}
+              className="border-blue-200 bg-blue-50 focus:border-blue-400 focus:ring-blue-300"
+            />
+            {errors.profilePicture && <p className="text-sm text-red-500">{errors.profilePicture.message}</p>}
+          </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="referralCode">Referral Code (if you have one)</Label>
-        <Input
-          id="referralCode"
-          placeholder="Enter referral code (optional)"
-          {...register("referralCode")}
-          disabled={isLoading}
-        />
-        {errors.referralCode && <p className="text-sm text-red-500">{errors.referralCode.message}</p>}
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="referralCode" className="text-blue-700 font-medium">Referral Code (if you have one)</Label>
+            <Input
+              id="referralCode"
+              placeholder="Enter referral code (optional)"
+              {...register("referralCode")}
+              disabled={isLoading}
+              className="border-blue-200 bg-blue-50 focus:border-blue-400 focus:ring-blue-300"
+            />
+            {errors.referralCode && <p className="text-sm text-red-500">{errors.referralCode.message}</p>}
+          </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating account...
-          </>
-        ) : (
-          "Create Trading Account"
-        )}
-      </Button>
-    </form>
+          <Button 
+            type="submit" 
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white mt-6" 
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating account...
+              </>
+            ) : (
+              "Create Trading Account"
+            )}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   )
 }

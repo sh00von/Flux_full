@@ -1,4 +1,5 @@
 "use client"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -11,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
 import { login } from "@/lib/auth"
 import { Loader2, AlertCircle } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -67,40 +68,65 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" placeholder="name@example.com" {...register("email")} disabled={isLoading} />
-        {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
-      </div>
-
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="password">Password</Label>
-          <Button variant="link" className="p-0 h-auto text-xs">
-            Forgot password?
-          </Button>
+    <Card>
+    <CardHeader className="space-y-1">
+      <CardTitle className="text-2xl">Sign in</CardTitle>
+      <CardDescription>Enter your email and password to sign in</CardDescription>
+    </CardHeader>
+    <CardContent className="grid gap-4">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="mb-6 text-center">
+          <h2 className="text-2xl font-bold text-blue-700">Welcome Back</h2>
+          <p className="text-gray-600">Sign in to your trading account</p>
         </div>
-        <Input id="password" type="password" placeholder="••••••••" {...register("password")} disabled={isLoading} />
-        {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
-      </div>
-
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in...
-          </>
-        ) : (
-          "Sign In"
+        {error && (
+          <Alert variant="destructive">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
-      </Button>
-    </form>
+        <div className="grid gap-2">
+          <Label htmlFor="email" className="text-blue-700 font-medium">
+            Email
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="name@example.com"
+            {...register("email")}
+            disabled={isLoading}
+            className="bg-blue-50 border-blue-200 focus:border-blue-400 focus:ring-blue-300"
+          />
+          {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+        </div>
+        <div className="grid gap-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password" className="text-blue-700 font-medium">
+              Password
+            </Label>
+            <Button variant="link" className="p-0 h-auto text-xs text-blue-600 hover:text-blue-800">
+              Forgot password?
+            </Button>
+          </div>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            {...register("password")}
+            disabled={isLoading}
+            className="bg-blue-50 border-blue-200 focus:border-blue-400 focus:ring-blue-300"
+          />
+          {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+        </div>
+        <Button
+          type="submit"
+          className="w-full bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white"
+          disabled={isLoading}
+        >
+          Sign In
+        </Button>
+      </form>
+    </CardContent>
+  </Card>
   )
 }

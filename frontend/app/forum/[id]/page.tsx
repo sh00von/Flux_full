@@ -43,20 +43,24 @@ export default function ForumPostPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50">
+      <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-blue-50">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <p className="mt-4 text-gray-500">Loading forum post...</p>
+        <p className="mt-4 text-blue-700">Loading forum post...</p>
       </div>
     )
   }
 
   if (error || !post) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 bg-blue-50">
         <Alert variant="destructive">
           <AlertDescription>{error || "Forum post not found"}</AlertDescription>
         </Alert>
-        <Button variant="outline" className="mt-4" onClick={() => router.back()}>
+        <Button
+          variant="outline"
+          className="mt-4 border-blue-300 text-blue-700 hover:bg-blue-100"
+          onClick={() => router.back()}
+        >
           <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
         </Button>
       </div>
@@ -73,19 +77,20 @@ export default function ForumPostPage() {
   })
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Button variant="outline" className="mb-6" asChild>
+    <div className="container mx-auto px-4 py-8 bg-gradient-to-b from-blue-50 to-white min-h-screen">
+      <Button variant="outline" className="mb-6 border-blue-300 text-blue-700 hover:bg-blue-100" asChild>
         <Link href="/forum">
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Forum
         </Link>
       </Button>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">{post.title}</CardTitle>
-          <CardDescription className="flex items-center gap-4">
+      <Card className="border-blue-200 overflow-hidden">
+        <div className="h-2 bg-gradient-to-r from-blue-400 to-blue-600"></div>
+        <CardHeader className="bg-blue-50">
+          <CardTitle className="text-2xl text-blue-700">{post.title}</CardTitle>
+          <CardDescription className="flex items-center gap-4 text-blue-600">
             <div className="flex items-center">
-              <Avatar className="h-6 w-6 mr-2">
+              <Avatar className="h-6 w-6 mr-2 bg-blue-600 text-white">
                 <AvatarFallback>{post.author.username.substring(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <span>{post.author.username}</span>
@@ -96,25 +101,25 @@ export default function ForumPostPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="prose max-w-none">
+          <div className="prose max-w-none mt-4">
             <p className="whitespace-pre-line">{post.content}</p>
           </div>
 
-          <Separator className="my-8" />
+          <Separator className="my-8 bg-blue-200" />
 
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Responses</h3>
+            <h3 className="text-lg font-medium text-blue-700">Responses</h3>
 
             {/* This would be where responses/comments would go */}
-            <div className="text-center py-6">
-              <p className="text-gray-500 mb-4">No responses yet. Be the first to respond!</p>
+            <div className="text-center py-6 bg-blue-50 rounded-lg">
+              <p className="text-blue-600 mb-4">No responses yet. Be the first to respond!</p>
 
               {isUserAuthenticated ? (
-                <Button>
+                <Button className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800">
                   <MessageSquarePlus className="mr-2 h-4 w-4" /> Add Response
                 </Button>
               ) : (
-                <Button variant="outline" asChild>
+                <Button variant="outline" asChild className="border-blue-300 text-blue-700 hover:bg-blue-100">
                   <Link href="/login?redirect=/forum">Log in to Respond</Link>
                 </Button>
               )}

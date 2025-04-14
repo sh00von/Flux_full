@@ -82,30 +82,33 @@ export default function CreateForumPostPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50">
+      <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-blue-50">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <p className="mt-4 text-gray-500">Loading...</p>
+        <p className="mt-4 text-blue-700">Loading...</p>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Button variant="outline" className="mb-6" asChild>
+    <div className="container mx-auto px-4 py-8 bg-gradient-to-b from-blue-50 to-white min-h-screen">
+      <Button variant="outline" className="mb-6 border-blue-300 text-blue-700 hover:bg-blue-100" asChild>
         <Link href="/forum">
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Forum
         </Link>
       </Button>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Create Forum Post</CardTitle>
-          <CardDescription>Share your thoughts, questions, or ideas with the community</CardDescription>
+      <Card className="border-blue-200 overflow-hidden">
+        <div className="h-2 bg-gradient-to-r from-blue-400 to-blue-600"></div>
+        <CardHeader className="bg-blue-50">
+          <CardTitle className="text-blue-700">Create Forum Post</CardTitle>
+          <CardDescription className="text-blue-600">
+            Share your thoughts, questions, or ideas with the community
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form id="forum-post-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="title" className="text-sm font-medium">
+              <label htmlFor="title" className="text-sm font-medium text-blue-700">
                 Title
               </label>
               <Input
@@ -113,12 +116,13 @@ export default function CreateForumPostPage() {
                 placeholder="Enter a descriptive title for your post"
                 {...register("title")}
                 disabled={isSubmitting}
+                className="border-blue-200 bg-blue-50 focus:border-blue-400 focus:ring-blue-300"
               />
               {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="content" className="text-sm font-medium">
+              <label htmlFor="content" className="text-sm font-medium text-blue-700">
                 Content
               </label>
               <Textarea
@@ -127,16 +131,27 @@ export default function CreateForumPostPage() {
                 rows={10}
                 {...register("content")}
                 disabled={isSubmitting}
+                className="border-blue-200 bg-blue-50 focus:border-blue-400 focus:ring-blue-300"
               />
               {errors.content && <p className="text-sm text-red-500">{errors.content.message}</p>}
             </div>
           </form>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button variant="outline" asChild disabled={isSubmitting}>
+        <CardFooter className="flex justify-between bg-blue-50">
+          <Button
+            variant="outline"
+            asChild
+            disabled={isSubmitting}
+            className="border-blue-300 text-blue-700 hover:bg-blue-100"
+          >
             <Link href="/forum">Cancel</Link>
           </Button>
-          <Button type="submit" form="forum-post-form" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            form="forum-post-form"
+            disabled={isSubmitting}
+            className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
+          >
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating Post...
