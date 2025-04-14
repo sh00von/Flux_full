@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { getUserProfile, logout, generateReferralCode } from "@/lib/auth"
+import { getUserProfile, logout, generateReferralCode, getMyReferrals } from "@/lib/auth"
 import { useToast } from "@/components/ui/use-toast"
 
 interface UserProfile {
@@ -21,12 +21,23 @@ interface UserProfile {
   referralReward?: number
 }
 
+interface Referral {
+  _id: string
+  referee: {
+    username: string
+    email: string
+  }
+  createdAt: string
+}
+
 export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [referrals, setReferrals] = useState<Referral[]>([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const { toast } = useToast()
 
+  // Fetch user profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -52,6 +63,24 @@ export default function ProfilePage() {
 
     fetchProfile()
   }, [router, toast])
+
+  // Fetch referrals once profile is loaded
+  useEffect(() => {
+    const fetchReferrals = async () => {
+      try {
+        const token = localStorage.getItem("auth-token")
+        if (!token) return
+        const referralsData = await getMyReferrals(token)
+        setReferrals(referralsData)
+      } catch (error) {
+        console.error("Failed to fetch referrals", error)
+      }
+    }
+
+    if (profile) {
+      fetchReferrals()
+    }
+  }, [profile])
 
   const handleLogout = () => {
     logout()
@@ -150,12 +179,10 @@ export default function ProfilePage() {
               <span className="text-sm font-medium text-gray-700">Referral Reward</span>
               <span className="text-sm text-gray-500">{profile.referralReward || 0} points</span>
             </div>
-
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-gray-700">Your Referral Code</span>
               <span className="text-sm font-mono text-gray-600">{profile.referralCode || "Not generated"}</span>
             </div>
-
             {profile.referralCode ? (
               <div className="flex space-x-2">
                 <Button
@@ -183,6 +210,24 @@ export default function ProfilePage() {
               </Button>
             )}
           </div>
+
+          {/* New section: Display referral list */}
+          {referrals.length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold text-gray-800">Referred Users</h3>
+              <ul className="mt-2 space-y-2">
+                {referrals.map((ref) => (
+                  <li key={ref._id} className="p-2 border rounded">
+                    <p className="text-sm text-gray-700">Username: {ref.referee.username}</p>
+                    <p className="text-sm text-gray-500">Email: {ref.referee.email}</p>
+                    <p className="text-xs text-gray-400">
+                      Registered on: {new Date(ref.createdAt).toLocaleDateString()}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <Button
             variant="default"
