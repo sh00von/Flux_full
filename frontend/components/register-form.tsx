@@ -18,6 +18,7 @@ const registerSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
   profilePicture: z.string().url({ message: "Please enter a valid URL" }).optional(),
+  referralCode: z.string().optional(), // Optional referral code field
 })
 
 type RegisterFormValues = z.infer<typeof registerSchema>
@@ -41,6 +42,7 @@ export default function RegisterForm() {
       email: "",
       password: "",
       profilePicture: "https://ui-avatars.com/api/?background=random",
+      referralCode: "", // default empty referral code field
     },
   })
 
@@ -50,16 +52,17 @@ export default function RegisterForm() {
     setSuccess(null)
 
     try {
+      // Call the registerUser API passing referralCode (if provided)
       await registerUser(
         data.username,
         data.email,
         data.password,
         data.profilePicture || "https://ui-avatars.com/api/?background=random",
+        data.referralCode
       )
 
       setSuccess("Account created successfully! You can now log in.")
       reset()
-
       toast({
         title: "Registration Successful",
         description: "Your trading account has been created. Please log in to start trading.",
@@ -70,10 +73,9 @@ export default function RegisterForm() {
         router.push("/login")
       }, 2000)
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to create account. Please try again."
-
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to create account. Please try again."
       setError(errorMessage)
-
       toast({
         title: "Registration Failed",
         description: errorMessage,
@@ -126,6 +128,17 @@ export default function RegisterForm() {
           disabled={isLoading}
         />
         {errors.profilePicture && <p className="text-sm text-red-500">{errors.profilePicture.message}</p>}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="referralCode">Referral Code (if you have one)</Label>
+        <Input
+          id="referralCode"
+          placeholder="Enter referral code (optional)"
+          {...register("referralCode")}
+          disabled={isLoading}
+        />
+        {errors.referralCode && <p className="text-sm text-red-500">{errors.referralCode.message}</p>}
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>

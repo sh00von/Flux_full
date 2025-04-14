@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { getUserProfile, logout } from "@/lib/auth"
+import { getUserProfile, logout, generateReferralCode } from "@/lib/auth"
 import { useToast } from "@/components/ui/use-toast"
 
 interface UserProfile {
@@ -17,6 +17,8 @@ interface UserProfile {
   profilePicture: string
   createdAt: string
   isAdmin: boolean
+  referralCode?: string
+  referralReward?: number
 }
 
 export default function ProfilePage() {
@@ -52,24 +54,50 @@ export default function ProfilePage() {
   }, [router, toast])
 
   const handleLogout = () => {
-    // Call the logout function (e.g., removing token from localStorage)
     logout()
-    // Redirect to /login
     router.push("/login")
-    // Show toast notification
     toast({
       title: "Logged out",
       description: "You have been successfully logged out.",
     })
   }
 
+  const handleCopyReferral = () => {
+    if (profile?.referralCode) {
+      navigator.clipboard.writeText(profile.referralCode)
+      toast({
+        title: "Referral Code Copied",
+        description: `Referral code ${profile.referralCode} copied to clipboard.`,
+      })
+    }
+  }
+
+  const handleGenerateReferral = async () => {
+    try {
+      const token = localStorage.getItem("auth-token")
+      const newProfile = await generateReferralCode(token || "")
+      setProfile(newProfile)
+
+      toast({
+        title: "Referral Code Generated",
+        description: `Your new referral code is ${newProfile.referralCode}`,
+      })
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to generate referral code.",
+        variant: "destructive",
+      })
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md shadow-lg">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Profile</CardTitle>
-            <CardDescription>Your account information</CardDescription>
+            <CardTitle className="text-2xl font-bold text-blue-600">Profile</CardTitle>
+            <CardDescription className="text-blue-500">Your account information</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col items-center space-y-4">
@@ -88,16 +116,14 @@ export default function ProfilePage() {
     )
   }
 
-  if (!profile) {
-    return null
-  }
+  if (!profile) return null
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Profile</CardTitle>
-          <CardDescription>Your account information</CardDescription>
+          <CardTitle className="text-2xl font-bold text-blue-600">Profile</CardTitle>
+          <CardDescription className="text-blue-500">Your account information</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex flex-col items-center space-y-4">
@@ -106,23 +132,63 @@ export default function ProfilePage() {
               <AvatarFallback>{profile.username.substring(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className="text-center">
-              <h2 className="text-xl font-semibold">{profile.username}</h2>
-              <p className="text-sm text-muted-foreground">{profile.email}</p>
+              <h2 className="text-xl font-semibold text-gray-800">{profile.username}</h2>
+              <p className="text-sm text-gray-600">{profile.email}</p>
             </div>
           </div>
 
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm font-medium">Member since</span>
-              <span className="text-sm text-muted-foreground">{new Date(profile.createdAt).toLocaleDateString()}</span>
+              <span className="text-sm font-medium text-gray-700">Member since</span>
+              <span className="text-sm text-gray-500">{new Date(profile.createdAt).toLocaleDateString()}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm font-medium">Account type</span>
-              <span className="text-sm text-muted-foreground">{profile.isAdmin ? "Administrator" : "User"}</span>
+              <span className="text-sm font-medium text-gray-700">Account type</span>
+              <span className="text-sm text-gray-500">{profile.isAdmin ? "Administrator" : "User"}</span>
             </div>
+            <div className="flex justify-between">
+              <span className="text-sm font-medium text-gray-700">Referral Reward</span>
+              <span className="text-sm text-gray-500">{profile.referralReward || 0} points</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-700">Your Referral Code</span>
+              <span className="text-sm font-mono text-gray-600">{profile.referralCode || "Not generated"}</span>
+            </div>
+
+            {profile.referralCode ? (
+              <div className="flex space-x-2">
+                <Button
+                  variant="default"
+                  onClick={handleCopyReferral}
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                >
+                  Copy Referral Code
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleGenerateReferral}
+                  className="w-full"
+                >
+                  Regenerate
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant="default"
+                onClick={handleGenerateReferral}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+              >
+                Generate Referral Code
+              </Button>
+            )}
           </div>
 
-          <Button variant="outline" className="w-full" onClick={handleLogout}>
+          <Button
+            variant="default"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+            onClick={handleLogout}
+          >
             Logout
           </Button>
         </CardContent>

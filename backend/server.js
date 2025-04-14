@@ -6,6 +6,8 @@ dotenv.config();
 
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
+const referralRoutes = require('./routes/referralRoutes');
+// Optional: if you have additional routes for listings, admin, forum, reviews, etc.
 const listingRoutes = require('./routes/listingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const forumRoutes = require('./routes/forumRoutes');
@@ -22,6 +24,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/referrals', referralRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/forum', forumRoutes);
@@ -32,7 +35,7 @@ app.get('/', (req, res) => {
   res.send('FluxTrade Platform API is running');
 });
 
-// Define port
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
