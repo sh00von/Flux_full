@@ -1,14 +1,18 @@
-import { redirect } from "next/navigation"
-import { cookies } from "next/headers"
+"use client"
+
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 import LoginForm from "@/components/login-form"
 
-export default async function LoginPage() {
-  // Check if user is already logged in
-  const token = (await cookies()).get("auth-token")?.value
+export default function LoginPage() {
+  const router = useRouter()
 
-  if (token) {
-    redirect("/profile")
-  }
+  useEffect(() => {
+    const token = localStorage.getItem("auth-token")
+    if (token) {
+      router.replace("/profile")
+    }
+  }, [])
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50">

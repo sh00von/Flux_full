@@ -13,6 +13,8 @@ const adminRoutes = require('./routes/adminRoutes');
 const forumRoutes = require('./routes/forumRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 
+const stripeRoutes = require('./routes/stripeRoutes');
+
 const app = express();
 
 // Connect to MongoDB
@@ -29,6 +31,7 @@ app.use('/api/listings', listingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/forum', forumRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/stripe', stripeRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

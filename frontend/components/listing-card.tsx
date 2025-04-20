@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -31,20 +31,49 @@ interface ListingCardProps {
 }
 
 export default function ListingCard({ listing }: ListingCardProps) {
-  // Format date to be more readable
+  const router = useRouter()
+
   const formattedDate = new Date(listing.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
   })
 
-  // Format price with commas for thousands using Bangladeshi Taka (BDT)
   const formattedPrice = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "BDT",
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(listing.price)
+
+  const handleBuyNow = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/stripe/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          title: listing.title,
+          price: listing.price,
+        }),
+       
+      })
+
+      const data = await res.json()
+
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || "Failed to create checkout session.")
+      }
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.url
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred"
+      console.error("Stripe checkout error:", errorMessage)
+    }
+  }
 
   return (
     <Card className="overflow-hidden h-full flex flex-col hover:shadow-md transition-shadow">
@@ -63,7 +92,6 @@ export default function ListingCard({ listing }: ListingCardProps) {
           </div>
         )}
 
-        {/* Status badge */}
         {!listing.isVerified && (
           <Badge variant="outline" className="absolute top-2 right-2 bg-yellow-100 text-yellow-800 border-yellow-200">
             <Clock className="h-3 w-3 mr-1" /> Pending
@@ -72,15 +100,15 @@ export default function ListingCard({ listing }: ListingCardProps) {
       </div>
 
       <CardContent className="p-4 flex-grow">
-        <h3 className="font-semibold text-blue-800 text-lg mb-1 line-clamp-1">{listing.title}</h3>
+        <h3 className="font-semibold text-lg mb-1 line-clamp-1">{listing.title}</h3>
         <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{listing.description}</p>
 
         <div className="flex flex-wrap gap-2 mb-3">
           <Badge variant="outline" className="flex items-center">
-            <Tag className="h-3 w-3 mr-1" /> {listing.category}
+            <Tag className="h-5 w-5 mr-1" /> {listing.category}
           </Badge>
           <Badge variant="outline" className="flex items-center">
-            <MapPin className="h-3 w-3 mr-1" /> {listing.location}
+            <MapPin className="h-5 w-5 mr-1" /> {listing.location}
           </Badge>
         </div>
 
@@ -94,9 +122,12 @@ export default function ListingCard({ listing }: ListingCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="p-4 pt-0 mt-auto">
-        <Button asChild className="w-full">
-          <Link href={`/listings/${listing._id}`}>View Details</Link>
+      <CardFooter className="p-4 pt-0 mt-auto flex gap-2">
+        <Button asChild className="w-1/2">
+          <a href={`/listings/${listing._id}`}>View</a>
+        </Button>
+        <Button onClick={handleBuyNow} variant="secondary" className="w-1/2">
+          Buy Now
         </Button>
       </CardFooter>
     </Card>
