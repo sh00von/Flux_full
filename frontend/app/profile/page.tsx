@@ -2,13 +2,23 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { getUserProfile, logout, generateReferralCode, getMyReferrals } from "@/lib/auth"
+import {
+  getUserProfile,
+  logout,
+  generateReferralCode,
+  getMyReferrals,
+} from "@/lib/auth"
 import { useToast } from "@/components/ui/use-toast"
-import { Loader2 } from "lucide-react"
 
 interface UserProfile {
   _id: string
@@ -35,10 +45,11 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [referrals, setReferrals] = useState<Referral[]>([])
   const [loading, setLoading] = useState(true)
+  const [copied, setCopied] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
 
-  // Fetch user profile
+  // Fetch profile...
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -51,8 +62,8 @@ export default function ProfilePage() {
         setProfile(userData)
       } catch {
         toast({
-          title: "Error",
-          description: "Failed to load profile. Please login again.",
+          title: "Error loading profile",
+          description: "Please login again.",
           variant: "destructive",
         })
         router.push("/login")
@@ -63,50 +74,47 @@ export default function ProfilePage() {
     fetchProfile()
   }, [router, toast])
 
-  // Fetch referrals
+  // Fetch referrals...
   useEffect(() => {
+    if (!profile) return
     const fetchReferrals = async () => {
       try {
-        const token = localStorage.getItem("auth-token")
-        if (!token) return
-        const referralsData = await getMyReferrals(token)
-        setReferrals(referralsData)
+        const token = localStorage.getItem("auth-token") || ""
+        const data = await getMyReferrals(token)
+        setReferrals(data)
       } catch (err) {
-        console.error("Failed to fetch referrals", err)
+        console.error(err)
       }
     }
-    if (profile) fetchReferrals()
+    fetchReferrals()
   }, [profile])
 
   const handleLogout = () => {
     logout()
     router.push("/login")
-    toast({ title: "Logged out", description: "You have been successfully logged out." })
   }
 
   const handleCopyReferral = () => {
-    if (profile?.referralCode) {
-      navigator.clipboard.writeText(profile.referralCode)
-      toast({
-        title: "Referral Code Copied",
-        description: `Referral code ${profile.referralCode} copied to clipboard.`,
-      })
-    }
+    if (!profile?.referralCode) return
+    navigator.clipboard.writeText(profile.referralCode).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
   }
 
   const handleGenerateReferral = async () => {
     try {
       const token = localStorage.getItem("auth-token") || ""
-      const newProfile = await generateReferralCode(token)
-      setProfile(newProfile)
+      const { referralCode } = await generateReferralCode(token)
+      setProfile((prev) => (prev ? { ...prev, referralCode } : prev))
       toast({
-        title: "Referral Code Generated",
-        description: `Your new referral code is ${newProfile.referralCode}`,
+        title: "New Code!",
+        description: `Your referral code is now ${referralCode}`,
       })
     } catch (err: any) {
       toast({
         title: "Error",
-        description: err.message || "Failed to generate referral code.",
+        description: err.message || "Could not generate code.",
         variant: "destructive",
       })
     }
@@ -134,8 +142,6 @@ export default function ProfilePage() {
 
   if (!profile) return null
 
-  const initials = profile.username.substring(0, 2).toUpperCase()
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md shadow-lg">
@@ -144,27 +150,41 @@ export default function ProfilePage() {
           <CardDescription>Account Information</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Avatar & basic info */}
           <div className="flex flex-col items-center space-y-4">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={profile.profilePicture} alt={profile.username} />
-              <AvatarFallback>{initials}</AvatarFallback>
+              <AvatarImage
+                src={profile.profilePicture}
+                alt={profile.username}
+              />
+              <AvatarFallback>
+                {profile.username.charAt(0)}
+              </AvatarFallback>
             </Avatar>
             <div className="text-center">
-              <h2 className="text-xl font-semibold">{profile.username}</h2>
-              <p className="text-sm text-gray-600">{profile.email}</p>
+              <h2 className="text-xl font-semibold">
+                {profile.username}
+              </h2>
+              <p className="text-sm text-gray-600">
+                {profile.email}
+              </p>
             </div>
           </div>
 
+          {/* Details */}
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="font-medium">Member since</span>
-              <span>{new Date(profile.createdAt).toLocaleDateString()}</span>
+              <span>
+                {new Date(profile.createdAt).toLocaleDateString()}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="font-medium">Account type</span>
-              <span>{profile.isAdmin ? "Administrator" : "User"}</span>
+              <span>
+                {profile.isAdmin ? "Administrator" : "User"}
+              </span>
             </div>
-            {/* ← Newly added: Interested Category */}
             <div className="flex justify-between">
               <span className="font-medium">Interested Category</span>
               <span>{profile.interestedCategory}</span>
@@ -181,31 +201,49 @@ export default function ProfilePage() {
             </div>
           </div>
 
+          {/* Referral actions */}
           {profile.referralCode ? (
             <div className="flex gap-2">
-              <Button className="flex-1" onClick={handleCopyReferral}>
-                Copy Code
+              <Button
+                className="flex-1 bg-[#3661E8] hover:bg-[#05a8ff] text-white"
+                onClick={handleCopyReferral}
+              >
+                {copied ? "Copied!" : "Copy Code"}
               </Button>
-              <Button variant="outline" className="flex-1" onClick={handleGenerateReferral}>
-                Regenerate
+              <Button
+                variant="outline"
+                className="flex-1 border-[#3661E8] text-[#3661E8] hover:bg-[#3661E8]/10"
+                onClick={handleGenerateReferral}
+              >
+                Regenerate Code
               </Button>
             </div>
           ) : (
-            <Button className="w-full" onClick={handleGenerateReferral}>
+            <Button
+              className="w-full bg-[#3661E8] hover:bg-[#05a8ff] text-white"
+              onClick={handleGenerateReferral}
+            >
               Generate Referral Code
             </Button>
           )}
 
+          {/* Referred users */}
           {referrals.length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold">Referred Users</h3>
+              <h3 className="text-lg font-semibold">
+                Referred Users
+              </h3>
               <ul className="mt-2 space-y-2">
                 {referrals.map((ref) => (
-                  <li key={ref._id} className="p-2 border rounded">
+                  <li
+                    key={ref._id}
+                    className="p-2 border rounded"
+                  >
                     <p>Username: {ref.referee.username}</p>
                     <p>Email: {ref.referee.email}</p>
                     <p className="text-xs text-gray-500">
-                      Joined: {new Date(ref.createdAt).toLocaleDateString()}
+                      Joined:{" "}
+                      {new Date(ref.createdAt).toLocaleDateString()}
                     </p>
                   </li>
                 ))}
@@ -213,7 +251,11 @@ export default function ProfilePage() {
             </div>
           )}
 
-          <Button className="w-full" onClick={handleLogout}>
+          {/* Logout */}
+          <Button
+            className="w-full bg-red-500 hover:bg-red-600 text-white"
+            onClick={handleLogout}
+          >
             Logout
           </Button>
         </CardContent>
