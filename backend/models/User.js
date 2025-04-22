@@ -1,5 +1,20 @@
-// models/User.js
-const mongoose = require('mongoose');
+// backend/models/User.js
+
+const mongoose = require('mongoose')
+
+// Master list of allowed categories
+const categories = [
+  "Electronics",
+  "Clothing",
+  "Home & Garden",
+  "Sports & Outdoors",
+  "Toys & Games",
+  "Vehicles",
+  "Collectibles",
+  "Books",
+  "Jewelry",
+  "Other",
+]
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -22,12 +37,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
-  referralCode: { // A unique code generated for each user
+  referralCode: {
     type: String,
     unique: true,
-    sparse: true, // Some documents might not have this field
+    sparse: true,
   },
-  referralReward: { // Points awarded to the referrer
+  referralReward: {
     type: Number,
     default: 0,
   },
@@ -39,6 +54,14 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-});
 
-module.exports = mongoose.model('User', userSchema);
+  // Single interested category field with enum validation
+  interestedCategory: {
+    type: String,
+    enum: categories,
+    required: true,
+    trim: true,
+  },
+})
+
+module.exports = mongoose.model('User', userSchema)

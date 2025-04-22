@@ -94,9 +94,9 @@ export default function PendingListings({ listings, loading, onListingUpdated }:
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 bg-white md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="overflow-hidden">
+          <Card key={i} className="overflow-hidden bg-white">
             <div className="aspect-video relative">
               <Skeleton className="h-full w-full" />
             </div>
@@ -127,7 +127,7 @@ export default function PendingListings({ listings, loading, onListingUpdated }:
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-white">
         {listings.map((listing) => (
           <Card key={listing._id} className="overflow-hidden">
             <div className="aspect-video relative">
@@ -187,7 +187,7 @@ export default function PendingListings({ listings, loading, onListingUpdated }:
       </div>
 
       <Dialog open={!!selectedListing} onOpenChange={(open) => !open && handleCloseDialog()}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white">
           <DialogHeader>
             <DialogTitle>{action === "approve" ? "Approve Listing" : "Reject Listing"}</DialogTitle>
             <DialogDescription>
@@ -237,6 +237,7 @@ export default function PendingListings({ listings, loading, onListingUpdated }:
             </Button>
             <Button
               onClick={handleSubmit}
+              className="bg-blue-600 text-white hover:bg-blue-700"
               disabled={isSubmitting || (action === "reject" && !notes)}
               variant={action === "approve" ? "default" : "destructive"}
             >

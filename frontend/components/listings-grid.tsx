@@ -1,6 +1,7 @@
+// components/listings-grid.tsx
 "use client"
 
-import ListingCard from "./listing-card"
+import ListingCard, { ListingCardProps } from "./listing-card"
 import { AlertCircle } from "lucide-react"
 
 interface Listing {
@@ -24,9 +25,10 @@ interface Listing {
 
 interface ListingsGridProps {
   listings: Listing[]
+  onAddToCart: ListingCardProps["onAddToCart"]
 }
 
-export default function ListingsGrid({ listings }: ListingsGridProps) {
+export default function ListingsGrid({ listings, onAddToCart }: ListingsGridProps) {
   if (!listings || listings.length === 0) {
     return (
       <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
@@ -42,7 +44,11 @@ export default function ListingsGrid({ listings }: ListingsGridProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {listings.map((listing) => (
-        <ListingCard key={listing._id} listing={listing} />
+        <ListingCard
+          key={listing._id}
+          listing={listing}
+          onAddToCart={onAddToCart}
+        />
       ))}
     </div>
   )

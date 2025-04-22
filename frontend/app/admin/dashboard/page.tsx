@@ -51,7 +51,7 @@ export default function AdminDashboardPage() {
 
   const handleLogout = () => {
     adminLogout()
-    router.push("/admin/login")
+    router.push("/")  // ← redirect to home page
     toast({
       title: "Logged out",
       description: "You have been successfully logged out of the admin panel.",
@@ -72,7 +72,7 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">  {/* use white background everywhere */}
       <header className="bg-white border-b border-gray-200 py-4">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center">
@@ -85,8 +85,8 @@ export default function AdminDashboardPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <Card className="mb-8">
+      <main className="container mx-auto px-4 py-8 bg-white">  {/* ensure main is white */}
+        <Card className="mb-8 bg-white">
           <CardHeader>
             <CardTitle>Pending Listings</CardTitle>
             <CardDescription>Review and approve or reject listings submitted by users</CardDescription>
@@ -99,7 +99,11 @@ export default function AdminDashboardPage() {
               </Alert>
             )}
 
-            <PendingListings listings={pendingListings} loading={loading} onListingUpdated={handleListingUpdated} />
+            <PendingListings
+              listings={pendingListings}
+              loading={loading}
+              onListingUpdated={handleListingUpdated}
+            />
           </CardContent>
         </Card>
       </main>

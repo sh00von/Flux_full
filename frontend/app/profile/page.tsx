@@ -8,17 +8,18 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getUserProfile, logout, generateReferralCode, getMyReferrals } from "@/lib/auth"
 import { useToast } from "@/components/ui/use-toast"
+import { Loader2 } from "lucide-react"
 
 interface UserProfile {
   _id: string
   username: string
   email: string
-  age: number
   profilePicture: string
   createdAt: string
   isAdmin: boolean
   referralCode?: string
   referralReward?: number
+  interestedCategory: string
 }
 
 interface Referral {
@@ -37,7 +38,7 @@ export default function ProfilePage() {
   const router = useRouter()
   const { toast } = useToast()
 
-  // Fetch user profile on mount
+  // Fetch user profile
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -46,10 +47,9 @@ export default function ProfilePage() {
           router.push("/login")
           return
         }
-
         const userData = await getUserProfile(token)
         setProfile(userData)
-      } catch (error) {
+      } catch {
         toast({
           title: "Error",
           description: "Failed to load profile. Please login again.",
@@ -60,11 +60,10 @@ export default function ProfilePage() {
         setLoading(false)
       }
     }
-
     fetchProfile()
   }, [router, toast])
 
-  // Fetch referrals once profile is loaded
+  // Fetch referrals
   useEffect(() => {
     const fetchReferrals = async () => {
       try {
@@ -72,23 +71,17 @@ export default function ProfilePage() {
         if (!token) return
         const referralsData = await getMyReferrals(token)
         setReferrals(referralsData)
-      } catch (error) {
-        console.error("Failed to fetch referrals", error)
+      } catch (err) {
+        console.error("Failed to fetch referrals", err)
       }
     }
-
-    if (profile) {
-      fetchReferrals()
-    }
+    if (profile) fetchReferrals()
   }, [profile])
 
   const handleLogout = () => {
     logout()
     router.push("/login")
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out.",
-    })
+    toast({ title: "Logged out", description: "You have been successfully logged out." })
   }
 
   const handleCopyReferral = () => {
@@ -103,18 +96,17 @@ export default function ProfilePage() {
 
   const handleGenerateReferral = async () => {
     try {
-      const token = localStorage.getItem("auth-token")
-      const newProfile = await generateReferralCode(token || "")
+      const token = localStorage.getItem("auth-token") || ""
+      const newProfile = await generateReferralCode(token)
       setProfile(newProfile)
-
       toast({
         title: "Referral Code Generated",
         description: `Your new referral code is ${newProfile.referralCode}`,
       })
-    } catch (error: any) {
+    } catch (err: any) {
       toast({
         title: "Error",
-        description: error.message || "Failed to generate referral code.",
+        description: err.message || "Failed to generate referral code.",
         variant: "destructive",
       })
     }
@@ -122,23 +114,18 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <Card className="w-full max-w-md shadow-lg">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-blue-600">Profile</CardTitle>
-            <CardDescription className="text-blue-500">Your account information</CardDescription>
+          <CardHeader>
+            <CardTitle>Loading Profile...</CardTitle>
+            <CardDescription>Please wait</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-col items-center space-y-4">
-              <Skeleton className="h-24 w-24 rounded-full" />
-              <Skeleton className="h-6 w-48" />
-              <Skeleton className="h-4 w-64" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-            </div>
+          <CardContent>
+            <Skeleton className="h-24 w-24 rounded-full mx-auto mb-4" />
+            <Skeleton className="h-6 w-40 mx-auto mb-6" />
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-3/4" />
           </CardContent>
         </Card>
       </div>
@@ -147,81 +134,78 @@ export default function ProfilePage() {
 
   if (!profile) return null
 
+  const initials = profile.username.substring(0, 2).toUpperCase()
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-blue-600">Profile</CardTitle>
-          <CardDescription className="text-blue-500">Your account information</CardDescription>
+        <CardHeader>
+          <CardTitle>Your Profile</CardTitle>
+          <CardDescription>Account Information</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex flex-col items-center space-y-4">
             <Avatar className="h-24 w-24">
               <AvatarImage src={profile.profilePicture} alt={profile.username} />
-              <AvatarFallback>{profile.username.substring(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
             <div className="text-center">
-              <h2 className="text-xl font-semibold text-gray-800">{profile.username}</h2>
+              <h2 className="text-xl font-semibold">{profile.username}</h2>
               <p className="text-sm text-gray-600">{profile.email}</p>
             </div>
           </div>
 
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm font-medium text-gray-700">Member since</span>
-              <span className="text-sm text-gray-500">{new Date(profile.createdAt).toLocaleDateString()}</span>
+              <span className="font-medium">Member since</span>
+              <span>{new Date(profile.createdAt).toLocaleDateString()}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm font-medium text-gray-700">Account type</span>
-              <span className="text-sm text-gray-500">{profile.isAdmin ? "Administrator" : "User"}</span>
+              <span className="font-medium">Account type</span>
+              <span>{profile.isAdmin ? "Administrator" : "User"}</span>
+            </div>
+            {/* ← Newly added: Interested Category */}
+            <div className="flex justify-between">
+              <span className="font-medium">Interested Category</span>
+              <span>{profile.interestedCategory}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm font-medium text-gray-700">Referral Reward</span>
-              <span className="text-sm text-gray-500">{profile.referralReward || 0} points</span>
+              <span className="font-medium">Referral Reward</span>
+              <span>{profile.referralReward || 0} points</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-700">Your Referral Code</span>
-              <span className="text-sm font-mono text-gray-600">{profile.referralCode || "Not generated"}</span>
+            <div className="flex justify-between">
+              <span className="font-medium">Your Referral Code</span>
+              <span className="font-mono">
+                {profile.referralCode || "Not generated"}
+              </span>
             </div>
-            {profile.referralCode ? (
-              <div className="flex space-x-2">
-                <Button
-                  variant="default"
-                  onClick={handleCopyReferral}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-                >
-                  Copy Referral Code
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleGenerateReferral}
-                  className="w-full"
-                >
-                  Regenerate
-                </Button>
-              </div>
-            ) : (
-              <Button
-                variant="default"
-                onClick={handleGenerateReferral}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-              >
-                Generate Referral Code
-              </Button>
-            )}
           </div>
 
-          {/* New section: Display referral list */}
+          {profile.referralCode ? (
+            <div className="flex gap-2">
+              <Button className="flex-1" onClick={handleCopyReferral}>
+                Copy Code
+              </Button>
+              <Button variant="outline" className="flex-1" onClick={handleGenerateReferral}>
+                Regenerate
+              </Button>
+            </div>
+          ) : (
+            <Button className="w-full" onClick={handleGenerateReferral}>
+              Generate Referral Code
+            </Button>
+          )}
+
           {referrals.length > 0 && (
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold text-gray-800">Referred Users</h3>
+            <div>
+              <h3 className="text-lg font-semibold">Referred Users</h3>
               <ul className="mt-2 space-y-2">
                 {referrals.map((ref) => (
                   <li key={ref._id} className="p-2 border rounded">
-                    <p className="text-sm text-gray-700">Username: {ref.referee.username}</p>
-                    <p className="text-sm text-gray-500">Email: {ref.referee.email}</p>
-                    <p className="text-xs text-gray-400">
-                      Registered on: {new Date(ref.createdAt).toLocaleDateString()}
+                    <p>Username: {ref.referee.username}</p>
+                    <p>Email: {ref.referee.email}</p>
+                    <p className="text-xs text-gray-500">
+                      Joined: {new Date(ref.createdAt).toLocaleDateString()}
                     </p>
                   </li>
                 ))}
@@ -229,11 +213,7 @@ export default function ProfilePage() {
             </div>
           )}
 
-          <Button
-            variant="default"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-            onClick={handleLogout}
-          >
+          <Button className="w-full" onClick={handleLogout}>
             Logout
           </Button>
         </CardContent>

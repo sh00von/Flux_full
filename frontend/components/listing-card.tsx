@@ -1,3 +1,4 @@
+// components/listing-card.tsx
 "use client"
 
 import Image from "next/image"
@@ -26,11 +27,12 @@ interface Listing {
   verificationStatus: string
 }
 
-interface ListingCardProps {
+export interface ListingCardProps {
   listing: Listing
+  onAddToCart: (item: { id: string; title: string; price: number }) => void
 }
 
-export default function ListingCard({ listing }: ListingCardProps) {
+export default function ListingCard({ listing, onAddToCart }: ListingCardProps) {
   const router = useRouter()
 
   const formattedDate = new Date(listing.createdAt).toLocaleDateString("en-US", {
@@ -45,35 +47,6 @@ export default function ListingCard({ listing }: ListingCardProps) {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(listing.price)
-
-  const handleBuyNow = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/stripe/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          listingId: listing._id,
-          title: listing.title,
-          price: listing.price,
-        }),
-       
-      })
-
-      const data = await res.json()
-
-      if (!res.ok || !data.url) {
-        throw new Error(data.error || "Failed to create checkout session.")
-      }
-
-      // Redirect to Stripe Checkout
-      window.location.href = data.url
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred"
-      console.error("Stripe checkout error:", errorMessage)
-    }
-  }
 
   return (
     <Card className="overflow-hidden h-full flex flex-col hover:shadow-md transition-shadow">
@@ -126,10 +99,14 @@ export default function ListingCard({ listing }: ListingCardProps) {
         <Button asChild className="w-1/2">
           <a href={`/listings/${listing._id}`}>View</a>
         </Button>
-        <Button onClick={handleBuyNow} variant="secondary" className="w-1/2">
-          Buy Now
+        <Button
+          onClick={() => onAddToCart({ id: listing._id, title: listing.title, price: listing.price })}
+          variant="secondary"
+          className="w-1/2"
+        >
+          Add to Cart
         </Button>
       </CardFooter>
     </Card>
-  )
+)
 }

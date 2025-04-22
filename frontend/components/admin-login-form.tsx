@@ -87,10 +87,10 @@ export default function AdminLoginForm() {
         {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button type="submit" className="w-full bg-blue-800 hover:bg-blue-600" disabled={isLoading}>
         {isLoading ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in...
+            <Loader2 className="mr-2 h-4 w-4 animate-spin bg-blue-800" /> Signing in...
           </>
         ) : (
           <>
